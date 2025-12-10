@@ -42,11 +42,11 @@ public:
         return *this *= 1/t;
     }
 
-    double length() const {
-        return std::sqrt(length_squared());
+    double Length() const {
+        return std::sqrt(LengthSquared());
     }
 
-    double length_squared() const {
+    double LengthSquared() const {
         return std::pow(xyz[0], 2) + std::pow(xyz[1], 2) + std::pow(xyz[2], 2);
     }
 
