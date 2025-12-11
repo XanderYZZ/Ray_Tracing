@@ -37,7 +37,7 @@ private:
     double min_value, max_value;
 };
 
-const Interval Interval::empty    = Interval(+infinity, -infinity);
-const Interval Interval::universe = Interval(-infinity, +infinity);
+const inline Interval Interval::empty    = Interval(+infinity, -infinity);
+const inline Interval Interval::universe = Interval(-infinity, +infinity);
 
 #endif 
