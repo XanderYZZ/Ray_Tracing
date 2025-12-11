@@ -6,6 +6,9 @@
 
 class Camera {
 public:
+    Camera(const double &aspect_ratio, const double &image_width, const double &samples_per_pixel) 
+    : aspect_ratio(aspect_ratio), image_width(image_width), samples_per_pixel(samples_per_pixel) {};
+
     void Render(const Hittable &world) {
         Initialize();
 
@@ -24,18 +27,6 @@ public:
                 WriteColor(std::cout, pixel_samples_scale * pixel_color);
             }
         }
-    }
-
-    void SetAspectRatio(double aspect_ratio) {
-        this->aspect_ratio = aspect_ratio;
-    }
-
-    void SetImageWidth(double image_width) {
-        this->image_width = image_width;
-    }
-
-    void SetSamplesPerPixel(double samples_per_pixel) {
-        this->samples_per_pixel = samples_per_pixel;
     }
 
 private:
