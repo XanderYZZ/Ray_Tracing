@@ -14,12 +14,14 @@ public:
         for (int j = 0; j < image_height; j++) {
             std::clog << "\rScanlines remaining: " << (image_height - j) << ' ' << std::flush;
             for (int i = 0; i < image_width; i++) {
-                auto pixel_center = pixel00_loc + (i * pixel_delta_u) + (j * pixel_delta_v);
-                auto ray_direction = pixel_center - center;
-                ray r(center, ray_direction);
+                vec3 pixel_color(0,0,0);
 
-                vec3 pixel_color = RayColor(r, world);
-                WriteColor(std::cout, pixel_color);
+                for (int sample = 0; sample < samples_per_pixel; sample++) {
+                    ray r = GetRay(i, j);
+                    pixel_color += RayColor(r, world);
+                }
+
+                WriteColor(std::cout, pixel_samples_scale * pixel_color);
             }
         }
     }
@@ -30,6 +32,10 @@ public:
 
     void SetImageWidth(double image_width) {
         this->image_width = image_width;
+    }
+
+    void SetSamplesPerPixel(double samples_per_pixel) {
+        this->samples_per_pixel = samples_per_pixel;
     }
 
 private:
@@ -52,6 +58,7 @@ private:
         auto viewport_upper_left =
             center - vec3(0, 0, focal_length) - viewport_u/2 - viewport_v/2;
         pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
+        pixel_samples_scale = 1.0 / samples_per_pixel;
     }
 
     vec3 RayColor(const ray &r, const Hittable &world) const {
@@ -67,13 +74,30 @@ private:
         return (1.0 - a) * vec3(1.0, 1.0, 1.0) + a * vec3(0.5, 0.7, 1.0);
     }
 
-    int    image_height;   
-    vec3   center;       
-    vec3   pixel00_loc;    
-    vec3   pixel_delta_u;  
-    vec3   pixel_delta_v;  
-    double aspect_ratio = 16.0 / 9.0;
-    int    image_width = 400;
+    ray GetRay(int i, int j) const {
+        auto offset = SampleSquare();
+        auto pixel_sample = pixel00_loc
+                          + ((i + offset.x()) * pixel_delta_u)
+                          + ((j + offset.y()) * pixel_delta_v);
+        auto ray_origin = center;
+        auto ray_direction = pixel_sample - ray_origin;
+
+        return ray(ray_origin, ray_direction);
+    }
+
+    vec3 SampleSquare() const {
+        return vec3(RandomDouble() - 0.5, RandomDouble() - 0.5, 0);
+    }
+
+    int          image_height;   
+    vec3         center;       
+    vec3         pixel00_loc;    
+    vec3         pixel_delta_u;  
+    vec3         pixel_delta_v;  
+    double       aspect_ratio = 16.0 / 9.0;
+    int          image_width = 400;
+    int          samples_per_pixel = 10;
+    double       pixel_samples_scale;
 };
 
 #endif 

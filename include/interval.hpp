@@ -23,6 +23,13 @@ public:
         return min_value < x && x < max_value;
     }
 
+    double Clamp(double x) const {
+        if (x < min_value) { return min_value; }
+        if (x > max_value) { return max_value; }
+
+        return x;
+    }
+
     double GetMax() const { return max_value; }
     double GetMin() const { return min_value; }
 

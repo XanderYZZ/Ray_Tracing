@@ -11,5 +11,6 @@ int main() {
     Camera camera;
     camera.SetAspectRatio(16.0 / 9.0);
     camera.SetImageWidth(400);
+    camera.SetSamplesPerPixel(100);
     camera.Render(world);
 }
