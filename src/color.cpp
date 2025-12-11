@@ -1,6 +1,6 @@
 #include "color.hpp"
 
-void write_color(std::ostream &out, const vec3 &pixel_color) {
+void WriteColor(std::ostream &out, const vec3 &pixel_color) {
     auto r = pixel_color.x();
     auto g = pixel_color.y();
     auto b = pixel_color.z();
