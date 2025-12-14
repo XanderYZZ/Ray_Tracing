@@ -6,8 +6,8 @@
 
 class Camera {
 public:
-    Camera(const double &aspect_ratio, const double &image_width, const double &samples_per_pixel) 
-    : aspect_ratio(aspect_ratio), image_width(image_width), samples_per_pixel(samples_per_pixel) {};
+    Camera(const double &aspect_ratio, const double &image_width, const double &samples_per_pixel, const double &max_depth) 
+    : aspect_ratio(aspect_ratio), image_width(image_width), samples_per_pixel(samples_per_pixel), max_depth(max_depth) {};
 
     void Render(const Hittable &world) {
         Initialize();
@@ -21,7 +21,7 @@ public:
 
                 for (int sample = 0; sample < samples_per_pixel; sample++) {
                     ray r = GetRay(i, j);
-                    pixel_color += RayColor(r, world);
+                    pixel_color += RayColor(r, max_depth, world);
                 }
 
                 WriteColor(std::cout, pixel_samples_scale * pixel_color);
@@ -52,11 +52,15 @@ private:
         pixel_samples_scale = 1.0 / samples_per_pixel;
     }
 
-    vec3 RayColor(const ray &r, const Hittable &world) const {
+    vec3 RayColor(const ray &r, int depth, const Hittable &world) const {
+        if (depth <= 0) { return vec3(0, 0, 0); }
+
         HitRecord rec;
 
-        if (world.Hit(r, rec, Interval(0, infinity))) {
-            return 0.5 * (rec.normal + vec3(1,1,1));
+        if (world.Hit(r, rec, Interval(0.001, infinity))) {
+            vec3 direction = rec.normal + RandomUnitVector();
+
+            return 0.5 * RayColor(ray(rec.p, direction), depth - 1, world);
         }
 
         vec3 unit_direction = unit_vector(r.GetDirection());
@@ -86,9 +90,10 @@ private:
     vec3         pixel_delta_u;  
     vec3         pixel_delta_v;  
     double       aspect_ratio = 16.0 / 9.0;
+    double       pixel_samples_scale;
     int          image_width = 400;
     int          samples_per_pixel = 10;
-    double       pixel_samples_scale;
+    int          max_depth = 10;
 };
 
 #endif 

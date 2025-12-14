@@ -6,6 +6,10 @@ void WriteColor(std::ostream &out, const vec3 &pixel_color) {
     auto g = pixel_color.y();
     auto b = pixel_color.z();
 
+    r = LinearToGamma(r);
+    g = LinearToGamma(g);
+    b = LinearToGamma(b);
+
     static const Interval intensity(0.000, 0.999);
     int r_byte = int(256 * intensity.Clamp(r));
     int g_byte = int(256 * intensity.Clamp(g));

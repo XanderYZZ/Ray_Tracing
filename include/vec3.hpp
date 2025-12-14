@@ -4,6 +4,7 @@
 #include <cmath>
 #include <iostream> 
 #include <array>
+#include "MathConstants.hpp"
 
 class vec3 {
 public:
@@ -50,6 +51,14 @@ public:
         return std::pow(xyz[0], 2) + std::pow(xyz[1], 2) + std::pow(xyz[2], 2);
     }
 
+    static vec3 random() {
+        return vec3(RandomDouble(), RandomDouble(), RandomDouble());
+    }
+
+    static vec3 random(double min, double max) {
+        return vec3(RandomDouble(min, max), RandomDouble(min, max), RandomDouble(min, max));
+    }
+
 private:
     std::array<double, 3> xyz;
 };
@@ -66,5 +75,8 @@ vec3 operator/(const vec3&, double);
 double dot(const vec3&, const vec3&);
 vec3 cross(const vec3&, const vec3&);
 vec3 unit_vector(const vec3&);
+vec3 RandomUnitVector();
+vec3 RandomOnHemisphere(const vec3& normal);
+double LinearToGamma(double linear_component);
 
 #endif 

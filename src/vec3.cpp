@@ -41,3 +41,30 @@ vec3 cross(const vec3 &u, const vec3 &v) {
 vec3 unit_vector(const vec3 &v) {
     return v / v.Length();
 }
+
+vec3 RandomUnitVector() {
+    while (true) {
+        auto p = vec3::random(-1,1);
+        auto lensq = p.LengthSquared();
+
+        if (1e-160 < lensq && lensq <= 1) {
+            return p / std::sqrt(lensq);
+        }
+    }
+}
+
+vec3 RandomOnHemisphere(const vec3& normal) {
+    vec3 on_unit_sphere = RandomUnitVector();
+
+    if (dot(on_unit_sphere, normal) > 0.0) {
+        return on_unit_sphere;
+    } else {
+        return -on_unit_sphere;
+    }
+}
+
+double LinearToGamma(double linear_component) {
+    if (linear_component > 0) { return std::sqrt(linear_component); }
+
+    return 0;
+}
