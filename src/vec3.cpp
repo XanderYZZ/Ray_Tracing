@@ -68,3 +68,7 @@ double LinearToGamma(double linear_component) {
 
     return 0;
 }
+
+vec3 Reflect(const vec3 &v, const vec3 &n) {
+    return v - 2 * dot(v, n) * n;
+}

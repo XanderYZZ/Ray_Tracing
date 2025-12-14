@@ -51,6 +51,12 @@ public:
         return std::pow(xyz[0], 2) + std::pow(xyz[1], 2) + std::pow(xyz[2], 2);
     }
 
+    bool NearZero() const {
+        auto s = 1e-8;
+
+        return (std::fabs(xyz[0]) < s) && (std::fabs(xyz[1]) < s) && (std::fabs(xyz[2]) < s);
+    }
+
     static vec3 random() {
         return vec3(RandomDouble(), RandomDouble(), RandomDouble());
     }
@@ -78,5 +84,6 @@ vec3 unit_vector(const vec3&);
 vec3 RandomUnitVector();
 vec3 RandomOnHemisphere(const vec3& normal);
 double LinearToGamma(double linear_component);
+vec3 Reflect(const vec3& v, const vec3& n);
 
 #endif 

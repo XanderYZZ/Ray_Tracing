@@ -3,6 +3,7 @@
 
 #include "hittable.hpp"
 #include "color.hpp"
+#include "Material.hpp"
 
 class Camera {
 public:
@@ -58,9 +59,14 @@ private:
         HitRecord rec;
 
         if (world.Hit(r, rec, Interval(0.001, infinity))) {
-            vec3 direction = rec.normal + RandomUnitVector();
+            ray scattered;
+            vec3 attenuation;
 
-            return 0.5 * RayColor(ray(rec.p, direction), depth - 1, world);
+            if (rec.mat->Scatter(r, rec, attenuation, scattered)) {
+                return attenuation * RayColor(scattered, depth-1, world);
+            }
+
+            return vec3(0,0,0);
         }
 
         vec3 unit_direction = unit_vector(r.GetDirection());
