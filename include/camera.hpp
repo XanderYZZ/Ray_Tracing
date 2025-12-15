@@ -7,8 +7,10 @@
 
 class Camera {
 public:
-    Camera(const double &aspect_ratio, const double &image_width, const double &samples_per_pixel, const double &max_depth) 
-    : aspect_ratio(aspect_ratio), image_width(image_width), samples_per_pixel(samples_per_pixel), max_depth(max_depth) {};
+    Camera(const double &aspect_ratio, const double &image_width, const double &samples_per_pixel, const double &max_depth, 
+        const double &vfov, const vec3 &lookfrom, const vec3 &lookat, const vec3 &vup) 
+    : aspect_ratio(aspect_ratio), image_width(image_width), samples_per_pixel(samples_per_pixel), max_depth(max_depth), vfov(vfov),
+    lookfrom(lookfrom), lookat(lookat), vup(vup) {};
 
     void Render(const Hittable &world) {
         Initialize();
@@ -34,23 +36,28 @@ private:
     void Initialize() {
         image_height = int(image_width / aspect_ratio);
         image_height = (image_height < 1) ? 1 : image_height;
-
-        center = vec3(0, 0, 0);
-
-        auto focal_length = 1.0;
-        auto viewport_height = 2.0;
+        pixel_samples_scale = 1.0 / samples_per_pixel;
+        center = lookfrom;  
+        auto focal_length = (lookfrom - lookat).Length();
+        auto theta = DegreesToRadians(vfov);
+        auto h = std::tan(theta / 2);
+        auto viewport_height = 2 * h * focal_length;
         auto viewport_width = viewport_height * (double(image_width)/image_height);
 
-        auto viewport_u = vec3(viewport_width, 0, 0);
-        auto viewport_v = vec3(0, -viewport_height, 0);
+        // Calculate the u,v,w unit basis vectors for the camera coordinate frame.
+        w = unit_vector(lookfrom - lookat);
+        u = unit_vector(cross(vup, w));
+        v = cross(w, u);
+
+        // Calculate the vectors across the horizontal and down the vertical viewport edges.
+        vec3 viewport_u = viewport_width * u;    // Vector across viewport horizontal edge
+        vec3 viewport_v = viewport_height * -v;  // Vector down viewport vertical edge
 
         pixel_delta_u = viewport_u / image_width;
         pixel_delta_v = viewport_v / image_height;
 
-        auto viewport_upper_left =
-            center - vec3(0, 0, focal_length) - viewport_u/2 - viewport_v/2;
+        auto viewport_upper_left = center - (focal_length * w) - viewport_u / 2 - viewport_v / 2;
         pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
-        pixel_samples_scale = 1.0 / samples_per_pixel;
     }
 
     vec3 RayColor(const ray &r, int depth, const Hittable &world) const {
@@ -100,6 +107,11 @@ private:
     int          image_width = 400;
     int          samples_per_pixel = 10;
     int          max_depth = 10;
+    double       vfov = 90;  
+    vec3         lookfrom = vec3(0,0,0);   // Point camera is looking from
+    vec3         lookat   = vec3(0,0,-1);  // Point camera is looking at
+    vec3         vup    = vec3(0,1,0);     // Camera-relative "up" direction
+    vec3   u, v, w;  
 };
 
 #endif 
