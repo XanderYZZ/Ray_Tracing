@@ -86,5 +86,6 @@ vec3 RandomOnHemisphere(const vec3& normal);
 double LinearToGamma(double linear_component);
 vec3 Reflect(const vec3& v, const vec3& n);
 vec3 Refract(const vec3& uv, const vec3& n, double etai_over_etat);
+vec3 RandomInUnitDisk();
 
 #endif 
